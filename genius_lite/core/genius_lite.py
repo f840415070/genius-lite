@@ -45,7 +45,8 @@ class GeniusLite:
         if not resp:
             return
         try:
-            results = getattr(self, seed.parser)(resp, seed.payload)
+            resp.payload = seed.payload
+            results = getattr(self, seed.parser)(resp)
             self.push_seeds(results)
         except:
             self.logger.error(f'\n{traceback.format_exc()}')
