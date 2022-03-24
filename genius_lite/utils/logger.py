@@ -1,18 +1,11 @@
 import sys
 import os
-import colorlog
 import logging
 from logging.handlers import TimedRotatingFileHandler
-
-log_colors = {
-    'DEBUG': 'white',
-    'INFO': 'green',
-    'WARNING': 'yellow',
-    'ERROR': 'red',
-    'CRITICAL': 'bold_red',
-}
+from genius_lite.utils.colored_formatter import ColoredFormatter
 
 log_format = '[%(levelname)s] %(asctime)s -> %(filename)s (line:%(lineno)d) -> %(name)s: %(message)s'
+
 
 class Logger:
     __instance = None
@@ -37,9 +30,7 @@ class Logger:
     def stream_handler(self, level, format):
         handler = logging.StreamHandler(sys.stderr)
         handler.setLevel(level)
-        handler.setFormatter(colorlog.ColoredFormatter(
-            fmt='%(log_color)s' + format, log_colors=log_colors
-        ))
+        handler.setFormatter(ColoredFormatter(fmt='%(log_color)s' + format))
         return handler
 
     def file_handler(self, name, level, format, output):
@@ -78,7 +69,7 @@ class Logger:
         pass
 
     @classmethod
-    def instance(cls, name = None, **spider_config):
+    def instance(cls, name=None, **spider_config):
         if not cls.__instance:
             cls.__instance = cls(name, **spider_config)
         return cls.__instance
