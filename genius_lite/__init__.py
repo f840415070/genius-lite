@@ -1,3 +1,5 @@
+from .core.genius_lite import GeniusLite
+
 """
 spider_config:
     name       | type              | default
