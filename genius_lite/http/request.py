@@ -30,6 +30,6 @@ class HttpRequest:
                 retry_count -= 1
                 self.logger.warning('Timeout')
             except:
-                self.logger.error(f'Error: {seed.url}\n{traceback.format_exc()}')
+                self.logger.error(f'\n{traceback.format_exc()}')
                 break
         return None
