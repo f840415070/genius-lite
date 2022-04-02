@@ -1,5 +1,5 @@
 class Seed:
-    __config_keys = [
+    kwargs_keys = [
         'timeout', 'verify', 'stream', 'cert', 'allow_redirects',
         'files', 'json', 'auth', 'hooks', 'proxies'
     ]
@@ -16,5 +16,5 @@ class Seed:
         self.payload = payload
         self.encoding = encoding
         for key in kwargs.keys():
-            if key in self.__config_keys:
+            if key in self.kwargs_keys:
                 setattr(self, key, kwargs[key])
