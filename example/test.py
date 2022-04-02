@@ -1,19 +1,38 @@
 from genius_lite.core.genius_lite import GeniusLite
 
-class TestSpider(GeniusLite):
-    spider_name = 'TestSpider'
+class TestSpider111(GeniusLite):
 
-    def start(self):
-        yield self.request(
-            url='https://www.futbin.org/futbin/api/getFilteredPlayers',
-            parser=self.parse,
-            params={'page': 1, 'league': 19}
-        )
+    def start_requests(self):
+        for i in [1, 2]:
+            yield self.make_seed(
+                url='',
+                parser=self.parse,
+                params={'pageNum': 1, 'pageSize': i},
+                data={'foo': 'bar', 'baz': 123, 'bar': True},
+                headers={
+                    'Authorization': '19b4dae1-3b1d-4d9d-976e-c7d10e787bcc'
+                },
+                payload=i
+            )
 
     def parse(self, response):
-        self.logger.debug(response.json())
+        for i in [3, 4]:
+            yield self.make_seed(
+                url='',
+                parser=self.parse2,
+                params={'pageNum': 1, 'pageSize': i},
+                data={'foo': 'bar', 'baz': 123, 'bar': True},
+                headers={
+                    'Authorization': '19b4dae1-3b1d-4d9d-976e-c7d10e787bcc'
+                },
+                payload=i
+            )
+
+    def parse2(self, response):
+        # self.logger.debug(response.payload)
+        pass
 
 
 if __name__ == '__main__':
-    spider = TestSpider()
+    spider = TestSpider111()
     spider.run()
