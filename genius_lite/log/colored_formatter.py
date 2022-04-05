@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 import typing
-import genius_lite.utils.escape_codes as escape_codes
+import genius_lite.log.escape_codes as escape_codes
 
 __all__ = (
     "default_log_colors",
