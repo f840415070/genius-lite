@@ -14,28 +14,41 @@ class GeniusLite(metaclass=ABCMeta):
     Basic Usage::
 
     >>> from genius_lite import GeniusLite
-    >>>
+
     >>> class MySpider(GeniusLite):
-    >>>     spider_name = 'MySpider'
+    >>>     spider_name = 'MySpider' # 爬虫名称，不设置默认爬虫类名
     >>>     spider_config = {
     >>>         'timeout': 15,
     >>>         'log_level': 'INFO',
     >>>     }
-    >>>     list_url = 'http://xxx'
-    >>>     detail_url = 'http://xxx'
-    >>>
+
     >>>     def start_requests(self):
-    >>>         for i in range(5):
+    >>>         pages = [1, 2, 3, 4]
+    >>>         for page in pages:
     >>>             yield self.crawl(
-    >>>                 url=self.list_url + '?page=' + str(i + 1),
+    >>>                 'http://xxx/list',
+    >>>                 self.parse_list_page,
+    >>>                 params={'page': page}
     >>>             )
-    >>>
+
     >>>     def parse_list_page(self, response):
     >>>         print(response.text)
-    >>>         yield self.crawl(
-    >>>             url=self.detail_url,
-    >>>             parser='parse_detail_page',
-    >>>         )
+    >>>         ... # do something
+    >>>         detail_urls = [...]
+    >>>         for url in detail_urls:
+    >>>             yield self.crawl(
+    >>>                 url,
+    >>>                 self.parser_detail_page,
+    >>>                 payload='some data'
+    >>>             )
+
+    >>>     def parser_detail_page(self, response):
+    >>>         print(response.payload)
+    >>>         ... # do something
+
+
+    >>> my_spider = MySpider()
+    >>> my_spider.run()
 
     """
     spider_name = ''
@@ -66,6 +79,23 @@ class GeniusLite(metaclass=ABCMeta):
 
     def crawl(self, url, parser, method='GET', data=None, params=None,
               headers=None, payload=None, encoding=None, **kwargs):
+        """设置即将被爬取的爬虫种子配置
+
+        :param url: URL for the new :class:`Request` object.
+        :param parser: a callback function to handle response
+        :param method: (optional) method for the new :class:`Request` object,
+            default 'GET'
+        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
+            object to send in the body of the :class:`Request`.
+        :param params: (optional) Dictionary or bytes to be sent in the query
+            string for the :class:`Request`.
+        :param headers: (optional) Dictionary of HTTP Headers to send with the
+            :class:`Request`.
+        :param payload: (optional) the payload data to the parser function
+        :param encoding: (optional) set response encoding
+        :param kwargs:
+        :return: Seed
+        """
         kwargs.update(dict(
             url=url, parser=parser, method=method, data=data, params=params,
             headers=headers, payload=payload, encoding=encoding
