@@ -1,6 +1,6 @@
 import traceback
 from collections.abc import Iterable
-from genius_lite.utils.logger import Logger
+from genius_lite.log.logger import Logger
 
 
 class SeedBasket:

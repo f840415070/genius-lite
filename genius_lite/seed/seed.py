@@ -1,20 +1,37 @@
 class Seed:
-    kwargs_keys = [
-        'timeout', 'verify', 'stream', 'cert', 'allow_redirects',
-        'files', 'json', 'auth', 'hooks', 'proxies'
-    ]
-
-    def __init__(self, url, parser, method, data, params,
-                 cookies, headers, payload, encoding, **kwargs):
+    def __init__(self, url=None, parser=None, method=None, data=None, params=None, headers=None, payload=None,
+                 encoding=None, cookies=None, files=None, json=None, auth=None, hooks=None, timeout=None, verify=None,
+                 stream=None, cert=None, allow_redirects=None, proxies=None):
         self.url = url
         self.parser = parser
         self.method = method
         self.data = data
         self.params = params
-        self.cookies = cookies
         self.headers = headers
         self.payload = payload
         self.encoding = encoding
-        for key in kwargs.keys():
-            if key in self.kwargs_keys:
-                setattr(self, key, kwargs[key])
+        self.cookies = cookies
+        self.files = files
+        self.json = json
+        self.auth = auth
+        self.hooks = hooks
+        self.timeout = timeout
+        self.verify = verify
+        self.stream = stream
+        self.cert = cert
+        self.allow_redirects = allow_redirects
+        self.proxies = proxies
+
+    @property
+    def prepare_req_kwargs(self):
+        return {
+            'url': self.url, 'method': self.method, 'data': self.data, 'params': self.params, 'headers': self.headers,
+            'cookies': self.cookies, 'files': self.files, 'json': self.json, 'auth': self.auth, 'hooks': self.hooks
+        }
+
+    @property
+    def send_req_kwargs(self):
+        return {
+            'timeout': self.timeout, 'verify': self.verify, 'stream': self.stream,
+            'cert': self.cert, 'allow_redirects': self.allow_redirects, 'proxies': self.proxies
+        }

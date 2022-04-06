@@ -1,10 +1,11 @@
 from genius_lite.core.genius_lite import GeniusLite
 
-class TestSpider111(GeniusLite):
+
+class TestSpider(GeniusLite):
 
     def start_requests(self):
         for i in [1, 2]:
-            yield self.make_seed(
+            yield self.crawl(
                 url='',
                 parser=self.parse,
                 params={'pageNum': 1, 'pageSize': i},
@@ -17,7 +18,7 @@ class TestSpider111(GeniusLite):
 
     def parse(self, response):
         for i in [3, 4]:
-            yield self.make_seed(
+            yield self.crawl(
                 url='',
                 parser=self.parse2,
                 params={'pageNum': 1, 'pageSize': i},
@@ -34,5 +35,5 @@ class TestSpider111(GeniusLite):
 
 
 if __name__ == '__main__':
-    spider = TestSpider111()
+    spider = TestSpider()
     spider.run()
