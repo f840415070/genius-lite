@@ -4,17 +4,11 @@ from genius_lite.core.genius_lite import GeniusLite
 class TestSpider(GeniusLite):
 
     def start_requests(self):
-        for i in [1, 2]:
-            yield self.crawl(
-                url='',
-                parser=self.parse,
-                params={'pageNum': 1, 'pageSize': i},
-                data={'foo': 'bar', 'baz': 123, 'bar': True},
-                headers={
-                    'Authorization': '19b4dae1-3b1d-4d9d-976e-c7d10e787bcc'
-                },
-                payload=i
-            )
+        yield self.crawl(
+            url='https://www.google.com',
+            parser=self.parse,
+            timeout=3,
+        )
 
     def parse(self, response):
         for i in [3, 4]:
