@@ -53,12 +53,13 @@ class GeniusLite(metaclass=ABCMeta):
     """
     spider_name = ''
     spider_config = {}
+    log_config = {}
 
     def __init__(self):
         if not self.spider_name.strip():
             self.spider_name = self.__class__.__name__
+        self.logger = Logger.instance(self.spider_name, **self.log_config)
         self._store = Store()
-        self.logger = Logger.instance(self.spider_name, **self.spider_config)
         self.request = HttpRequest()
         self.default_timeout = self.spider_config.get('timeout') or 10
 

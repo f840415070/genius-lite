@@ -10,11 +10,11 @@ log_format = '[%(levelname)s] %(asctime)s -> %(filename)s (line:%(lineno)d) -> %
 class Logger:
     __instance = None
 
-    def __init__(self, name, **spider_config):
-        self.enable = spider_config.get('log_enable') != False
-        level = spider_config.get('log_level') or 'DEBUG'
-        format = spider_config.get('log_format') or log_format
-        output = spider_config.get('log_output')
+    def __init__(self, name, **log_config):
+        self.enable = log_config.get('enable') != False
+        level = log_config.get('level') or 'DEBUG'
+        format = log_config.get('format') or log_format
+        output = log_config.get('output')
 
         self.logger = logging.getLogger(name)
         self.logger.setLevel(level)
