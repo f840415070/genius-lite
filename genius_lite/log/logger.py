@@ -1,7 +1,8 @@
-import sys
-import os
 import logging
+import os
+import sys
 from logging.handlers import TimedRotatingFileHandler
+
 from genius_lite.log.colored_formatter import ColoredFormatter
 
 log_format = '[%(levelname)s] %(asctime)s -> %(filename)s (line:%(lineno)d) -> %(name)s: %(message)s'
@@ -43,7 +44,7 @@ class Logger:
 
     def check_output_path(self, path):
         if not os.path.exists(path):
-            raise FileNotFoundError(f'Directory not found: {path}')
+            raise FileNotFoundError('Directory not found: %s' % path)
 
     @property
     def debug(self):
@@ -69,19 +70,7 @@ class Logger:
         pass
 
     @classmethod
-    def instance(cls, name=None, **spider_config):
+    def instance(cls, name=None, **log_config):
         if not cls.__instance:
-            cls.__instance = cls(name, **spider_config)
+            cls.__instance = cls(name, **log_config)
         return cls.__instance
-
-
-if __name__ == '__main__':
-    config = {}
-    logger = Logger.instance('example', **config)
-    logger.debug('it is a debug msg')
-    logger.info('it is a info msg')
-    logger.warning('it is a warning msg')
-    logger.error('it is a error msg')
-    logger.critical({'error': 'it is a critical msg'})
-    logger2 = Logger.instance()
-    logger2.info(id(logger) == id(logger2))
