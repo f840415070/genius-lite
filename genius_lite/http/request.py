@@ -63,7 +63,6 @@ class HttpRequest:
                     )
         return None
 
-
     def parse(self, seed):
         try:
             response = self.request(seed)
