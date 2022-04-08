@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from genius_lite.http.request import HttpRequest
 from genius_lite.http.user_agent import get_ua
 from genius_lite.seed.seed import Seed
-from genius_lite.seed.seed_basket import SeedBasket
+from genius_lite.seed.store import Store
 from genius_lite.log.logger import Logger
 
 
@@ -57,7 +57,7 @@ class GeniusLite(metaclass=ABCMeta):
     def __init__(self):
         if not self.spider_name.strip():
             self.spider_name = self.__class__.__name__
-        self._seed_basket = SeedBasket()
+        self._store = Store()
         self.logger = Logger.instance(self.spider_name, **self.spider_config)
         self.request = HttpRequest()
         self.default_timeout = self.spider_config.get('timeout') or 10
@@ -124,21 +124,27 @@ class GeniusLite(metaclass=ABCMeta):
         raise NotImplementedError('self.%s() not implemented!' % parser)
 
     def _run_once(self):
-        seed = self._seed_basket.seed()
-        if not seed:
+        seed = self._store.fetch()
+        if seed is None:
+            return
+        if not isinstance(seed, Seed):
+            self.logger.warning(
+                'Invalid Seed. '
+                'Perhaps you forgot to use `yield self.crawl(...)`'
+            )
             return
         response = self.request.parse(seed)
         if not response:
             return
+        response.payload = seed.payload
         try:
-            response.payload = seed.payload
             seeds = getattr(self, seed.parser)(response)
-            self._seed_basket.put(seeds)
+            self._store.put(seeds)
         except:
             self.logger.error('\n%s' % traceback.format_exc())
 
     def run(self):
         start_seeds = self.start_requests()
-        self._seed_basket.put(start_seeds)
-        while self._seed_basket.has_seeds:
+        self._store.put(start_seeds)
+        while self._store.not_empty:
             self._run_once()
