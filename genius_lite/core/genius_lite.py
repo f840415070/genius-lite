@@ -41,7 +41,7 @@ class GeniusLite(metaclass=ABCMeta):
     >>>             )
 
     >>>     def parse_detail_page(self, response):
-    >>>         print(response.payload)
+    >>>         print(response.payload) # output: some data
     >>>         ... # do something
 
 
@@ -147,3 +147,4 @@ class GeniusLite(metaclass=ABCMeta):
         self._store.put(start_seeds)
         while self._store.not_empty:
             self._run_once()
+        self.request.all_tasks_done()
