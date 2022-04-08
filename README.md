@@ -10,10 +10,8 @@ from genius_lite import GeniusLite
 
 class MySpider(GeniusLite):
     spider_name = 'MySpider' # 爬虫名称，不设置默认爬虫类名
-    spider_config = {
-        'timeout': 15,
-        'log_level': 'INFO',
-    }
+    spider_config = {'timeout': 15}
+    log_config = {'output': '/absolute/path'}
     
     def start_requests(self):
         pages = [1, 2, 3, 4]
@@ -31,12 +29,12 @@ class MySpider(GeniusLite):
         for url in detail_urls:
             yield self.crawl(
                 url,
-                self.parser_detail_page,
+                self.parse_detail_page,
                 payload='some data'
             )
 
-    def parser_detail_page(self, response):
-        print(response.payload)
+    def parse_detail_page(self, response):
+        print(response.payload) # output: some data
         ... # do something
 
 
@@ -48,10 +46,14 @@ my_spider.run()
     name       | type              | default
     ————————————————————————————————————————————
     timeout    | num or (num, num) | 10
-    log_enable | bool              | False
-    log_level  | str               | 'DEBUG'
-    log_format | str               | '[%(levelname)s] %(asctime)s -> %(filename)s (line:%(lineno)d) -> %(name)s: %(message)s'
-    log_output | str               | None
+    
+### log_config
+    name       | type              | default
+    ————————————————————————————————————————————
+    enable     | bool              | False
+    level      | str               | 'DEBUG'
+    format     | str               | '[%(levelname)s] %(asctime)s -> %(filename)s (line:%(lineno)d) -> %(name)s: %(message)s'
+    output     | str               | None
 
 ### start_requests
 所有爬虫请求的入口，爬虫子类都要重写该方法
@@ -113,3 +115,6 @@ def crawl(self, url, parser, method='GET', data=None, params=None,
     :return: Seed
     """
 ```
+
+### response
+`requests` 库的 `Response` 对象，包含 `crawl` 方法设置的 `payload` 属性

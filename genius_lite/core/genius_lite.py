@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from genius_lite.http.request import HttpRequest
 from genius_lite.http.user_agent import get_ua
 from genius_lite.seed.seed import Seed
-from genius_lite.seed.seed_basket import SeedBasket
+from genius_lite.seed.store import Store
 from genius_lite.log.logger import Logger
 
 
@@ -17,10 +17,8 @@ class GeniusLite(metaclass=ABCMeta):
 
     >>> class MySpider(GeniusLite):
     >>>     spider_name = 'MySpider' # 爬虫名称，不设置默认爬虫类名
-    >>>     spider_config = {
-    >>>         'timeout': 15,
-    >>>         'log_level': 'INFO',
-    >>>     }
+    >>>     spider_config = {'timeout': 15}
+    >>>     log_config = {'output': '/absolute/path'}
 
     >>>     def start_requests(self):
     >>>         pages = [1, 2, 3, 4]
@@ -38,11 +36,11 @@ class GeniusLite(metaclass=ABCMeta):
     >>>         for url in detail_urls:
     >>>             yield self.crawl(
     >>>                 url,
-    >>>                 self.parser_detail_page,
+    >>>                 self.parse_detail_page,
     >>>                 payload='some data'
     >>>             )
 
-    >>>     def parser_detail_page(self, response):
+    >>>     def parse_detail_page(self, response):
     >>>         print(response.payload)
     >>>         ... # do something
 
@@ -53,12 +51,13 @@ class GeniusLite(metaclass=ABCMeta):
     """
     spider_name = ''
     spider_config = {}
+    log_config = {}
 
     def __init__(self):
         if not self.spider_name.strip():
             self.spider_name = self.__class__.__name__
-        self._seed_basket = SeedBasket()
-        self.logger = Logger.instance(self.spider_name, **self.spider_config)
+        self.logger = Logger.instance(self.spider_name, **self.log_config)
+        self._store = Store()
         self.request = HttpRequest()
         self.default_timeout = self.spider_config.get('timeout') or 10
 
@@ -124,21 +123,27 @@ class GeniusLite(metaclass=ABCMeta):
         raise NotImplementedError('self.%s() not implemented!' % parser)
 
     def _run_once(self):
-        seed = self._seed_basket.seed()
-        if not seed:
+        seed = self._store.fetch()
+        if seed is None:
+            return
+        if not isinstance(seed, Seed):
+            self.logger.warning(
+                'Invalid Seed. '
+                'Perhaps you forgot to use `yield self.crawl(...)`'
+            )
             return
         response = self.request.parse(seed)
         if not response:
             return
+        response.payload = seed.payload
         try:
-            response.payload = seed.payload
             seeds = getattr(self, seed.parser)(response)
-            self._seed_basket.put(seeds)
+            self._store.put(seeds)
         except:
             self.logger.error('\n%s' % traceback.format_exc())
 
     def run(self):
         start_seeds = self.start_requests()
-        self._seed_basket.put(start_seeds)
-        while self._seed_basket.has_seeds:
+        self._store.put(start_seeds)
+        while self._store.not_empty:
             self._run_once()
