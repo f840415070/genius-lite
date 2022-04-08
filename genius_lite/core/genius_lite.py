@@ -17,10 +17,8 @@ class GeniusLite(metaclass=ABCMeta):
 
     >>> class MySpider(GeniusLite):
     >>>     spider_name = 'MySpider' # 爬虫名称，不设置默认爬虫类名
-    >>>     spider_config = {
-    >>>         'timeout': 15,
-    >>>         'log_level': 'INFO',
-    >>>     }
+    >>>     spider_config = {'timeout': 15}
+    >>>     log_config = {'output': '/absolute/path'}
 
     >>>     def start_requests(self):
     >>>         pages = [1, 2, 3, 4]
@@ -38,11 +36,11 @@ class GeniusLite(metaclass=ABCMeta):
     >>>         for url in detail_urls:
     >>>             yield self.crawl(
     >>>                 url,
-    >>>                 self.parser_detail_page,
+    >>>                 self.parse_detail_page,
     >>>                 payload='some data'
     >>>             )
 
-    >>>     def parser_detail_page(self, response):
+    >>>     def parse_detail_page(self, response):
     >>>         print(response.payload)
     >>>         ... # do something
 
