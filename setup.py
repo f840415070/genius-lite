@@ -5,10 +5,10 @@ from setuptools import setup, find_packages
 
 setup(
     name="genius_lite",
-    version="0.2.0",
+    version="0.2.1",
     keywords=("Spider", "Web Crawler"),
     description="A Light Spider(Web Crawler) System in Python",
-    long_description="A Light Spider(Web Crawler) System in Python",
+    long_description=open('README.md').read(),
     license="MIT Licence",
 
     url="https://github.com/f840415070/genius-lite",
