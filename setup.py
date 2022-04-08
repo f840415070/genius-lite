@@ -8,7 +8,8 @@ setup(
     version="0.2.1",
     keywords=("Spider", "Web Crawler"),
     description="A Light Spider(Web Crawler) System in Python",
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf-8').read(),
+    long_description_content_type='text/markdown',
     license="MIT Licence",
 
     url="https://github.com/f840415070/genius-lite",
