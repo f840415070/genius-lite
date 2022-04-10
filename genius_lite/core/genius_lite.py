@@ -129,13 +129,14 @@ class GeniusLite(metaclass=ABCMeta):
         if not isinstance(seed, Seed):
             self.logger.warning(
                 'Invalid Seed. '
-                'Perhaps you forgot to use `yield self.crawl(...)`'
+                'Perhaps forgot to use `yield self.crawl(...)`'
             )
             return
         response = self.request.parse(seed)
         if not response:
             return
-        response.payload = seed.payload
+        setattr(response, 'payload', seed.payload)
+        setattr(response, 'raw_seed', seed)
         try:
             seeds = getattr(self, seed.parser)(response)
             self._store.put(seeds)
@@ -147,4 +148,4 @@ class GeniusLite(metaclass=ABCMeta):
         self._store.put(start_seeds)
         while self._store.not_empty:
             self._run_once()
-        self.request.all_tasks_done()
+        self.request.done()
