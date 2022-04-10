@@ -132,6 +132,8 @@ class GeniusLite(metaclass=ABCMeta):
                 'Perhaps forgot to use `yield self.crawl(...)`'
             )
             return
+        self.logger.info('Fetch a %s' % seed)
+
         response = self.request.parse(seed)
         if not response:
             return
