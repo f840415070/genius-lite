@@ -3,32 +3,36 @@ from genius_lite.log.logger import Logger
 
 class Record:
     def __init__(self):
-        self.success_count = 0
-        self.failure_count = 0
-        self.duplicate_count = 0
-        self.duplicates = {}
+        self.successes = 0
+        self.failures = 0
+        self.duplicates = 0
+        self.succeeded_map = {}
+        self.total_time = 0
         self.logger = Logger.instance()
 
     def is_duplicate(self, seed_id):
-        return self.duplicates.get(seed_id)
+        return self.succeeded_map.get(seed_id)
 
     def show(self):
+        self.logger.info('#' * 15 + ' Done ' + '#' * 15)
+        total = self.successes + self.failures + self.duplicates
         self.logger.info(
-            'All done! '
-            'total %s, successes %s, failures %s, duplicates %s' % (
-                self.success_count + self.failure_count + self.duplicate_count,
-                self.success_count,
-                self.failure_count,
-                self.duplicate_count
+            'Total %s, Time %ss, Successes %s, Failures %s, Duplicates %s' % (
+                total,
+                self.total_time / 1000,
+                self.successes,
+                self.failures,
+                self.duplicates
             )
         )
 
-    def success(self, seed_id):
-        self.success_count += 1
-        self.duplicates[seed_id] = 1
+    def success(self, seed):
+        self.successes += 1
+        self.succeeded_map[seed.id] = 1
+        self.total_time += seed.time
 
     def failure(self):
-        self.failure_count += 1
+        self.failures += 1
 
     def duplicate(self):
-        self.duplicate_count += 1
+        self.duplicates += 1
