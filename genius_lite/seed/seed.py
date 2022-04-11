@@ -1,3 +1,4 @@
+import json
 from requests import Request
 from genius_lite.utils.tool import md5, obj_to_str, str_sort
 
@@ -6,13 +7,14 @@ class Seed:
     def __init__(self, url=None, parser=None, method=None, data=None, params=None, headers=None, payload=None,
                  encoding=None, cookies=None, files=None, json=None, auth=None, hooks=None, timeout=None, verify=None,
                  stream=None, cert=None, allow_redirects=None, proxies=None):
+        self.id = self.create_id(url, method, params, data)
         self.url = url
         self.parser = parser
         self.method = method
-        self.data = data
         self.params = params
-        self.headers = headers
+        self.data = data
         self.payload = payload
+        self.headers = headers
         self.encoding = encoding
         self.cookies = cookies
         self.files = files
@@ -26,32 +28,19 @@ class Seed:
         self.allow_redirects = allow_redirects
         self.proxies = proxies
 
-        self.id = self.create_id()
         self.time = None
 
     def __str__(self):
-        result = 'id[%s], url[%s], method[%s], parser[%s]' % (
-            self.id,
-            self.url,
-            self.method,
-            self.parser
-        )
-        if self.params:
-            result += ', params[%s]' % obj_to_str(self.params)
-        if self.data:
-            result += ', data[%s]' % obj_to_str(self.data)
-        if self.payload:
-            result += ', payload[%s]' % obj_to_str(self.payload)
+        data = {key: value for key, value in self.__dict__.items() if value is not None}
+        return json.dumps(data)
 
-        return 'seed<%s>' % result
-
-    def create_id(self):
-        data = self.url + self.method
-        if self.params:
-            data += obj_to_str(self.params)
-        if self.data:
-            data += obj_to_str(self.data)
-        return md5(str_sort(data))
+    def create_id(self, url, method, params, data):
+        data_str = url + method
+        if params:
+            data_str += obj_to_str(params)
+        if data:
+            data_str += obj_to_str(data)
+        return md5(str_sort(data_str))
 
     def create_request(self):
         return Request(
