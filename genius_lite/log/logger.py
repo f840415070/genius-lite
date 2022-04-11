@@ -5,7 +5,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 from genius_lite.log.colored_formatter import ColoredFormatter
 
-log_format = '[%(levelname)s] %(asctime)s -> %(filename)s (line:%(lineno)d) -> %(name)s: %(message)s'
+log_format = '[%(levelname)s] %(asctime)s -> %(name)s: %(message)s'
 
 
 class Logger:
