@@ -14,10 +14,10 @@ class Record:
         return self.succeeded_map.get(seed_id)
 
     def show(self):
-        self.logger.info('#' * 15 + ' Done ' + '#' * 15)
+        self.logger.info('All requests are done!')
         total = self.successes + self.failures + self.duplicates
         self.logger.info(
-            'Total %s, Time %ss, Successes %s, Failures %s, Duplicates %s' % (
+            'Total %s | Time %ss | Successes %s | Failures %s | Duplicates %s' % (
                 total,
                 self.total_time / 1000,
                 self.successes,
