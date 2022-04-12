@@ -1,6 +1,8 @@
 import traceback
 from time import time as current_time_stamp
+
 from requests import Session, exceptions
+
 from genius_lite.http.record import Record
 from genius_lite.log.logger import Logger
 
@@ -23,7 +25,13 @@ def on_request(send_func):
         response = send_func(*args, **kwargs)
         seed.time = int((current_time_stamp() - start_time) * 1000)
 
-        logger.info('Response[%s] within %sms' % (response.status_code, seed.time))
+        msg = 'Response[%s] within %sms' % (response.status_code, seed.time)
+        if response.status_code < 300:
+            logger.info(msg)
+        elif response.status_code < 400:
+            logger.warning(msg)
+        else:
+            logger.error(msg)
 
         return response
 
@@ -73,6 +81,8 @@ class HttpRequest:
                 self.record.failure()
             else:
                 self.record.success(seed)
+                if seed.encoding and isinstance(seed.encoding, str):
+                    response.encoding = seed.encoding
             return response
         except:
             self.logger.error('\n%s' % traceback.format_exc())
