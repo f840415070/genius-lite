@@ -52,7 +52,6 @@ my_spider.run()
     ————————————————————————————————————————————
     enable     | bool              | False
     level      | str               | 'DEBUG'
-    format     | str               | '[%(levelname)s] %(asctime)s -> %(filename)s (line:%(lineno)d) -> %(name)s: %(message)s'
     output     | str               | None
 
 ### start_requests
