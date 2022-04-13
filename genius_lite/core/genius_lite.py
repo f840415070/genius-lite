@@ -3,9 +3,9 @@ from abc import ABCMeta, abstractmethod
 
 from genius_lite.http.request import HttpRequest
 from genius_lite.http.user_agent import get_ua
+from genius_lite.log.logger import Logger
 from genius_lite.seed.seed import Seed
 from genius_lite.seed.store import Store
-from genius_lite.log.logger import Logger
 
 
 class GeniusLite(metaclass=ABCMeta):
@@ -13,40 +13,25 @@ class GeniusLite(metaclass=ABCMeta):
 
     Basic Usage::
 
-    >>> from genius_lite import GeniusLite
+        from genius_lite import GeniusLite
 
-    >>> class MySpider(GeniusLite):
-    >>>     spider_name = 'MySpider' # 爬虫名称，不设置默认爬虫类名
-    >>>     spider_config = {'timeout': 15}
-    >>>     log_config = {'output': '/absolute/path'}
+        class MySpider(GeniusLite):
 
-    >>>     def start_requests(self):
-    >>>         pages = [1, 2, 3, 4]
-    >>>         for page in pages:
-    >>>             yield self.crawl(
-    >>>                 'http://xxx/list',
-    >>>                 self.parse_list_page,
-    >>>                 params={'page': page}
-    >>>             )
+            def start_requests(self):
+                yield self.crawl('https://www.google.com', self.parse_google_page)
 
-    >>>     def parse_list_page(self, response):
-    >>>         print(response.text)
-    >>>         ... # do something
-    >>>         detail_urls = [...]
-    >>>         for url in detail_urls:
-    >>>             yield self.crawl(
-    >>>                 url,
-    >>>                 self.parse_detail_page,
-    >>>                 payload='some data'
-    >>>             )
+            def parse_google_page(self, response):
+                print(response.text)
+                detail_urls = [...]
+                for url in detail_urls:
+                    yield self.crawl(url, self.parse_detail_page)
 
-    >>>     def parse_detail_page(self, response):
-    >>>         print(response.payload) # output: some data
-    >>>         ... # do something
+            def parse_detail_page(self, response):
+                ...
 
-
-    >>> my_spider = MySpider()
-    >>> my_spider.run()
+        if __name__ == '__main__':
+            my_spider = MySpider()
+            my_spider.run()
 
     """
     spider_name = ''
@@ -63,41 +48,40 @@ class GeniusLite(metaclass=ABCMeta):
 
     @abstractmethod
     def start_requests(self):
-        """所有爬虫请求的入口，爬虫子类都要重写该方法
+        """所有爬虫请求的入口，爬虫子类必须重写该方法以生成请求种子
 
         Basic Usage::
 
-        >>> def start_requests(self):
-        >>>     yield self.crawl(url='http://...', parser=self.parse_func)
-        >>>
-        >>> def parse_func(self, response):
-        >>>     print(response.text)
+            def start_requests(self):
+                yield self.crawl(url='http://...', parser=self.parse_func)
+
+            def parse_func(self, response):
+                print(response.text)
 
         """
         pass
 
     def crawl(self, url, parser, method='GET', data=None, params=None,
-              headers=None, payload=None, encoding=None, **kwargs):
-        """设置即将被爬取的爬虫种子配置
+              headers=None, payload=None, encoding=None, unique=True, **kwargs):
+        """通过 yield 该方法生成爬虫请求种子，部分参数可查看 requests 文档 - https://docs.python-requests.org/en/latest/api/
 
-        :param url: URL for the new :class:`Request` object.
-        :param parser: a callback function to handle response
-        :param method: (optional) method for the new :class:`Request` object,
-            default 'GET'
-        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
-            object to send in the body of the :class:`Request`.
-        :param params: (optional) Dictionary or bytes to be sent in the query
-            string for the :class:`Request`.
-        :param headers: (optional) Dictionary of HTTP Headers to send with the
-            :class:`Request`.
-        :param payload: (optional) the payload data to the parser function
-        :param encoding: (optional) set response encoding
-        :param kwargs:
+        :param url: 请求地址
+        :param parser: 响应解析函数，参数为 response 对象
+        :param method: (default='GET') 请求方法
+        :param params: (optional) 查询参数
+        :param data: (optional) POST 请求参数
+        :param headers: (optional) 请求头
+        :param payload: (optional) 携带到响应解析函数的数据，通过 response.payload 形式读取
+        :param encoding: (optional) response 编码设置
+        :param unique: (default=True) 设置该请求是否唯一，设为 False 时将根据 url、method、params、data 内容进行去重
+        :param kwargs: (optional) 支持的关键字参数如下 cookies, files, json, auth, hooks, timeout, verify, stream, cert,
+                                    allow_redirects, proxies
+
         :return: Seed
         """
         kwargs.update(dict(
             url=url, parser=parser, method=method, data=data, params=params,
-            headers=headers, payload=payload, encoding=encoding
+            headers=headers, payload=payload, encoding=encoding, unique=unique
         ))
         self._prepare(kwargs)
         return Seed(**kwargs)
