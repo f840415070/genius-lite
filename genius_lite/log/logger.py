@@ -66,7 +66,7 @@ class Logger:
 
     def check_output_path(self, path):
         if not os.path.exists(path):
-            raise FileNotFoundError('Directory not found: %s' % path)
+            raise FileNotFoundError('check your logs path -> %s' % path)
 
     @property
     def debug(self):
