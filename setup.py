@@ -5,8 +5,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="genius_lite",
-    version="0.2.3",
-    keywords=("Spider", "Web Crawler"),
+    version="0.2.4",
+    keywords=("Spider", "Web Crawler", "requests"),
     description="A Light Spider(Web Crawler) System in Python",
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
