@@ -71,7 +71,7 @@ class HttpRequest:
         return None
 
     def parse(self, seed):
-        if self.record.is_duplicate(seed.id):
+        if seed.unique and self.record.is_duplicate(seed.id):
             self.record.duplicate()
             self.logger.warning('Abandon the request with duplicate id %s' % seed.id)
             return None
