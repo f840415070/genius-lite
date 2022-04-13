@@ -1,12 +1,14 @@
 import json
+
 from requests import Request
+
 from genius_lite.utils.tool import md5, obj_to_str, str_sort
 
 
 class Seed:
     def __init__(self, url=None, parser=None, method=None, data=None, params=None, headers=None, payload=None,
                  encoding=None, cookies=None, files=None, json=None, auth=None, hooks=None, timeout=None, verify=None,
-                 stream=None, cert=None, allow_redirects=None, proxies=None):
+                 stream=None, cert=None, allow_redirects=None, proxies=None, unique=None):
         self.id = self.create_id(url, method, params, data)
         self.url = url
         self.parser = parser
@@ -27,6 +29,7 @@ class Seed:
         self.cert = cert
         self.allow_redirects = allow_redirects
         self.proxies = proxies
+        self.unique = unique
 
         self.time = None
 
