@@ -63,7 +63,7 @@ class GeniusLite(metaclass=ABCMeta):
 
     def crawl(self, url, parser, method='GET', data=None, params=None,
               headers=None, payload=None, encoding=None, unique=True, **kwargs):
-        """通过 yield 该方法生成爬虫请求种子，部分参数可查看 requests 文档 - https://docs.python-requests.org/en/latest/api/
+        """通过 yield 该方法生成爬虫请求种子，部分参数可查看 [requests](https://docs.python-requests.org/en/latest/api/#main-interface) 文档
 
         :param url: 请求地址
         :param parser: 响应解析函数，参数为 response 对象
@@ -73,7 +73,7 @@ class GeniusLite(metaclass=ABCMeta):
         :param headers: (optional) 请求头
         :param payload: (optional) 携带到响应解析函数的数据，通过 response.payload 形式读取
         :param encoding: (optional) response 编码设置
-        :param unique: (default=True) 设置该请求是否唯一，设为 False 时将根据 url、method、params、data 内容进行去重
+        :param unique: (default=True) 设置该请求是否唯一，设为 True 时将根据 url、method、params、data 内容过滤相同请求
         :param kwargs: (optional) 支持的关键字参数如下 cookies, files, json, auth, hooks, timeout, verify, stream, cert,
                                     allow_redirects, proxies
 

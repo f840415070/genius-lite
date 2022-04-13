@@ -42,7 +42,7 @@ class MySpider(GeniusLite):
 ```
 
 ### self.crawl
-通过 yield 该方法生成爬虫请求种子，部分参数可查看 requests 文档 - https://docs.python-requests.org/en/latest/api/
+通过 yield 该方法生成爬虫请求种子，部分参数可查看 [requests](https://docs.python-requests.org/en/latest/api/#main-interface) 文档
 
 - url: 请求地址
 - parser: 响应解析函数，参数为 response 对象
@@ -52,7 +52,7 @@ class MySpider(GeniusLite):
 - headers: (optional) 请求头
 - payload: (optional) 携带到响应解析函数的数据，通过 response.payload 形式读取
 - encoding: (optional) response 编码设置
-- unique: (default=True) 设置该请求是否唯一，设为 False 时将根据 url、method、params、data 内容进行去重
+- unique: (default=True) 设置该请求是否唯一，设为 True 时将根据 url、method、params、data 内容过滤相同请求
 - kwargs: (optional) 支持的关键字参数如下：
     cookies, files, json, auth, hooks, timeout, verify, stream, cert, allow_redirects, proxies
 
