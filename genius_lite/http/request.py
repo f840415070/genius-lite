@@ -9,8 +9,7 @@ from genius_lite.log.logger import Logger
 TIMEOUT_EXCEPTIONS = (
     exceptions.Timeout,
     exceptions.ConnectTimeout,
-    exceptions.ReadTimeout,
-    exceptions.ConnectionError
+    exceptions.ReadTimeout
 )
 
 
@@ -43,7 +42,7 @@ class HttpRequest:
         self.logger = Logger.instance()
         self.session = Session()
         self.record = Record()
-        self.retry_limit = 3
+        self.max_retries = 3
 
     @on_request
     def send(self, request, **kwargs):
@@ -53,27 +52,26 @@ class HttpRequest:
         times = 0
         prepared_request = self.session.prepare_request(seed.create_request())
         setattr(prepared_request, 'raw_seed', seed)
-        while times <= self.retry_limit:
+        while times <= self.max_retries:
             try:
                 response = self.send(prepared_request, **seed.send_setting)
                 return response
-            except TIMEOUT_EXCEPTIONS:
-                self.logger.warning(
-                    'Timeout(retry times: %s/%s) '
-                    'when requesting %s' % (times, self.retry_limit, seed.url)
-                )
+
+            except TIMEOUT_EXCEPTIONS as e:
+                self.logger.warning('%s %s' % (e.__class__.__name__, e))
                 times += 1
                 if times > 3:
-                    self.logger.error(
-                        'The maximum number of retries has been reached. '
-                        'Drop request %s' % seed.url
-                    )
-        return None
+                    self.logger.error('%s (The maximum number of retries has been reached)' % e.__class__.__name__)
+                    return None
+
+            except Exception as e:
+                self.logger.error(e)
+                return None
 
     def parse(self, seed):
         if seed.unique and self.record.is_duplicate(seed.id):
             self.record.duplicate()
-            self.logger.warning('Abandon the request with duplicate id %s' % seed.id)
+            self.logger.warning('Duplicate request(id=%s)' % seed.id)
             return None
         try:
             response = self.request(seed)
