@@ -53,7 +53,7 @@ class GeniusLite(metaclass=ABCMeta):
         Basic Usage::
 
             def start_requests(self):
-                yield self.crawl(url='http://...', parser=self.parse_func)
+                yield self.crawl(url='https://www.google.com', parser=self.parse_func)
 
             def parse_func(self, response):
                 print(response.text)
@@ -108,15 +108,9 @@ class GeniusLite(metaclass=ABCMeta):
 
     def _run_once(self):
         seed = self._store.fetch()
-        if seed is None:
-            return
         if not isinstance(seed, Seed):
-            self.logger.warning(
-                'Invalid Seed. '
-                'Perhaps forgot to use `yield self.crawl(...)`'
-            )
             return
-        self.logger.info('Fetch a seed %s' % seed)
+        self.logger.info('Fetch %s' % seed)
 
         response = self.request.parse(seed)
         if not response:
