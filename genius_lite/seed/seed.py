@@ -1,5 +1,3 @@
-import json
-
 from requests import Request
 
 from genius_lite.utils.tool import md5, obj_to_str, str_sort
@@ -34,8 +32,12 @@ class Seed:
         self.time = None
 
     def __str__(self):
-        data = {key: value for key, value in self.__dict__.items() if value is not None}
-        return json.dumps(data)
+        dict_values = [(key, value) for key, value in self.__dict__.items() if value is not None]
+        seed_props = ', '.join([self._str_value(key, value) for key, value in dict_values])
+        return 'Seed(%s)' % seed_props
+
+    def _str_value(self, key, value):
+        return "%s='%s'" % (key, value) if isinstance(value, str) else '%s=%s' % (key, value)
 
     def create_id(self, url, method, params, data):
         data_str = url + method
